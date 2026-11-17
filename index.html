@@ -32,7 +32,7 @@ html, body {
 
 /* ---------- Start screen ---------- */
 .title-wrap { text-align: center; max-width: 560px; }
-.game-title {
+.morelikelame-title {
   font-family: Georgia, "Times New Roman", serif;
   font-size: clamp(2.5rem, 10vw, 5rem);
   margin: 0;
@@ -40,7 +40,7 @@ html, body {
   color: #f5d720;
   text-shadow: 0 4px 0 #b87333, 0 8px 18px rgba(0,0,0,0.6);
 }
-.game-title-3d {
+.morelikelame-title-3d {
   font-family: Georgia, serif;
   font-size: clamp(1.5rem, 6vw, 3rem);
   color: #4fa3e3;
@@ -108,8 +108,8 @@ html, body {
 }
 .room-code.big { font-size: clamp(1.6rem, 6vw, 2.6rem); padding: 18px; }
 
-/* ---------- Game screen layout ---------- */
-#screen-game {
+/* ---------- morelikelame screen layout ---------- */
+#screen-morelikelame {
   display: grid;
   grid-template-columns: 1fr clamp(240px, 22vw, 300px);
   grid-template-rows: auto 1fr auto;
@@ -226,13 +226,13 @@ html, body {
 }
 #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-/* ---------- Game over ---------- */
+/* ---------- morelikelame over ---------- */
 .win-title { font-family: Georgia, serif; color: #f5d720; font-size: clamp(2rem, 8vw, 3.5rem); margin: 0; }
 .win-name { font-size: clamp(1.2rem, 5vw, 2rem); font-weight: 700; margin: 12px 0 24px; }
 
 /* ---------- Responsive ---------- */
 @media (max-width: 760px) {
-  #screen-game {
+  #screen-morelikelame {
     grid-template-columns: 1fr;
     grid-template-rows: auto minmax(280px, 1fr) auto auto;
     grid-template-areas:
@@ -284,7 +284,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 // ===== js/config.js =====
 // config.js — Classic US Monopoly board data, cards, token types, constants.
-// All data here is derived from publicly published game rules and is original
+// All data here is derived from publicly published morelikelame rules and is original
 // to this project. No third-party copyrighted assets are bundled.
 
 const TOKENS = [
@@ -531,14 +531,14 @@ function resumeAudio() {
 
 
 // ===== js/save.js =====
-// save.js — persist/restore the game state to localStorage so a session can
+// save.js — persist/restore the morelikelame state to localStorage so a session can
 // survive a page reload. State is plain JSON (see rules.js), so it serializes
 // directly.
 
 const KEY = 'monopoly3d_save_v1';
 const META_KEY = 'monopoly3d_meta_v1';
 
-function saveGame(state, meta = {}) {
+function savemorelikelame(state, meta = {}) {
   try {
     localStorage.setItem(KEY, JSON.stringify(state));
     localStorage.setItem(META_KEY, JSON.stringify({
@@ -555,7 +555,7 @@ function saveGame(state, meta = {}) {
   }
 }
 
-function loadGame() {
+function loadmorelikelame() {
   try {
     const raw = localStorage.getItem(KEY);
     if (!raw) return null;
@@ -586,7 +586,7 @@ function hasSave() {
 // so no backend server is required and the whole thing works on GitHub Pages.
 //
 // Modes:
-//   host   — authoritative: owns the game state, applies actions, broadcasts.
+//   host   — authoritative: owns the morelikelame state, applies actions, broadcasts.
 //   client — sends action requests to the host, receives state broadcasts.
 //
 // The host's Peer ID is "mp3d-XXXX" where XXXX is a short room code shared
@@ -1501,7 +1501,7 @@ function createToken(id, hexColor) {
 //   dice: [d1, d2] | null
 //   rolledThisTurn: bool
 //   doublesCount: number
-//   phase: 'roll' | 'await-decision' | 'auction' | 'gameover'
+//   phase: 'roll' | 'await-decision' | 'auction' | 'morelikelameover'
 //   pending: null | { kind, ... }   // what the current player must decide
 //   properties: { [pos]: { owner, houses, mortgaged } }   // houses 0..5, 5 = hotel
 //   chanceOrder: [cardIds], chanceIdx
@@ -1600,8 +1600,8 @@ function netWorth(state, playerId) {
   return total;
 }
 
-// --- Game start ------------------------------------------------------------
-function startGame(state, players) {
+// --- morelikelame start ------------------------------------------------------------
+function startmorelikelame(state, players) {
   const s = clone(state);
   s.players = players.map((p, i) => ({
     id: p.id,
@@ -1627,7 +1627,7 @@ function startGame(state, players) {
   s.hotels = HOTEL_BANK;
   s.turn = 1;
   s.winner = null;
-  log(s, `Game started with ${s.players.length} players.`);
+  log(s, `morelikelame started with ${s.players.length} players.`);
   return { state: s, events: [{ type: 'start' }] };
 }
 
@@ -2402,9 +2402,9 @@ function endTurnAction(state) {
   const remaining = activePlayers(s);
   if (remaining.length === 1) {
     s.winner = remaining[0].id;
-    s.phase = 'gameover';
+    s.phase = 'morelikelameover';
     events.push({ type: 'win', playerId: remaining[0].id });
-    log(s, `${remaining[0].name} wins the game!`);
+    log(s, `${remaining[0].name} wins the morelikelame!`);
   }
 
   events.push({ type: 'turn', playerId: s.players[next].id });
@@ -2415,7 +2415,7 @@ function endTurnAction(state) {
 // --- Dispatch --------------------------------------------------------------
 function dispatch(state, action) {
   switch (action.kind) {
-    case 'start':            return startGame(state, action.players);
+    case 'start':            return startmorelikelame(state, action.players);
     case 'roll':             return rollAction(state);
     case 'buy':              return buyAction(state, action.playerId);
     case 'decline-buy':      return declineBuyAction(state, action.playerId);
@@ -2437,7 +2437,7 @@ function dispatch(state, action) {
 
 // ===== js/board3d.js =====
 // board3d.js — Three.js scene: 3D board, tiles, animated player tokens,
-// rolling dice, and houses/hotels. Exposes a small API used by game.js/ui.js.
+// rolling dice, and houses/hotels. Exposes a small API used by morelikelame.js/ui.js.
 
 
 
@@ -2979,9 +2979,9 @@ class Board3D {
 }
 
 
-// ===== js/game.js =====
+// ===== js/morelikelame.js =====
 const applyAction = dispatch;  /* alias of dispatch */
-// game.js — central coordinator.
+// morelikelame.js — central coordinator.
 // Owns the authoritative state when mode is 'host' or 'local'; mirrors the
 // host's state when mode is 'client'. Subscribers (the UI) get {state, events}
 // on every change. Events drive animations and sounds.
@@ -2990,12 +2990,12 @@ const applyAction = dispatch;  /* alias of dispatch */
 
 
 
-class Game {
+class morelikelame {
   constructor() {
     this.state = initialState();
     this.mode = null;            // 'local' | 'host' | 'client'
     this.selfId = null;          // peer id (network) or 'local'
-    this.selfPlayerId = null;    // player id within the game
+    this.selfPlayerId = null;    // player id within the morelikelame
     this.code = null;            // room code (host/client)
     this.subs = [];
     this.net = new Network();
@@ -3026,10 +3026,10 @@ class Game {
     this.mode = 'local';
     this.selfId = 'local';
     this.selfPlayerId = players[0]?.id || null;
-    const { state, events } = startGame(this.state, players);
+    const { state, events } = startmorelikelame(this.state, players);
     this.state = state;
     this.meta = { mode: 'local', selfId: 'local', roomCode: null, players };
-    saveGame(this.state, this.meta);
+    savemorelikelame(this.state, this.meta);
     this._emit(events);
   }
 
@@ -3050,7 +3050,7 @@ class Game {
   _onClientJoin(connId, msg) {
     if (this.lobby.find(p => p.id === connId)) return;
     if (this.state.phase !== 'lobby' && this.state.phase !== undefined && this.state.players.length > 0) {
-      // game already in progress — reject
+      // morelikelame already in progress — reject
       this.net.sendTo(connId, { type: 'lobby', error: 'started' });
       return;
     }
@@ -3069,7 +3069,7 @@ class Game {
       this._broadcastLobby();
       return;
     }
-    // Mid-game disconnect: mark the player bankrupt so the game can continue.
+    // Mid-morelikelame disconnect: mark the player bankrupt so the morelikelame can continue.
     const player = this.state.players.find(p => p.id === connId);
     if (player && !player.bankrupt) {
       const action = { kind: 'force-bankrupt', playerId: connId };
@@ -3089,7 +3089,7 @@ class Game {
         this.state.log.push({ t: Date.now(), msg: `${p.name} disconnected and went bankrupt.` });
         this.state.lastUpdate = Date.now();
       }
-      saveGame(this.state, this.meta);
+      savemorelikelame(this.state, this.meta);
       this._broadcastState([{ type: 'bankrupt', playerId: connId, creditorId: null }]);
       this._emit([{ type: 'bankrupt', playerId: connId, creditorId: null }]);
     }
@@ -3107,7 +3107,7 @@ class Game {
     }
     const { state, events } = applyAction(this.state, action);
     this.state = state;
-    saveGame(this.state, this.meta);
+    savemorelikelame(this.state, this.meta);
     this._broadcastState(events);
     this._emit(events);
   }
@@ -3122,14 +3122,14 @@ class Game {
     this.net.broadcast({ type: 'state', state: this.state, events: events || [] });
   }
 
-  startHostGame() {
+  startHostmorelikelame() {
     const players = this.lobby.map(p => ({
       id: p.id, name: p.name, token: p.token, color: p.color,
     }));
-    const { state, events } = startGame(this.state, players);
+    const { state, events } = startmorelikelame(this.state, players);
     this.state = state;
     this.meta = { mode: 'host', selfId: this.selfId, roomCode: this.code, players };
-    saveGame(this.state, this.meta);
+    savemorelikelame(this.state, this.meta);
     this._broadcastState(events);
     this._emit(events);
   }
@@ -3179,7 +3179,7 @@ class Game {
     if (!action.playerId) action = { ...action, playerId: this.selfPlayerId };
     const { state, events } = applyAction(this.state, action);
     this.state = state;
-    saveGame(this.state, this.meta);
+    savemorelikelame(this.state, this.meta);
     if (this.mode === 'host') this._broadcastState(events);
     this._emit(events);
   }
@@ -3192,7 +3192,7 @@ class Game {
 
 // ===== js/ui.js =====
 const setAudioEnabled = setEnabled;  /* alias of setEnabled */
-// ui.js — all DOM screens, HUD, panels, and modals. Subscribes to game.js.
+// ui.js — all DOM screens, HUD, panels, and modals. Subscribes to morelikelame.js.
 
 
 
@@ -3219,14 +3219,14 @@ const el = (tag, props = {}, children = []) => {
 const TOKEN_NAMES = Object.fromEntries(TOKENS.map(t => [t.id, t.name]));
 
 class UI {
-  constructor(game, board) {
-    this.game = game;
+  constructor(morelikelame, board) {
+    this.morelikelame = morelikelame;
     this.board = board;
     this.audioOn = true;
     this._lastLogLen = 0;
     this._profile = { name: '', token: 'hat', color: PLAYER_COLORS[0] };
     this._localPlayers = [];
-    this.game.subscribe(({ state, events }) => this._onUpdate(state, events));
+    this.morelikelame.subscribe(({ state, events }) => this._onUpdate(state, events));
   }
 
   mount(root) {
@@ -3237,7 +3237,7 @@ class UI {
       <div id="screen-host-lobby" class="screen hidden"></div>
       <div id="screen-join" class="screen hidden"></div>
       <div id="screen-client-lobby" class="screen hidden"></div>
-      <div id="screen-game" class="screen hidden">
+      <div id="screen-morelikelame" class="screen hidden">
         <div id="board-container"></div>
         <div id="hud-top"></div>
         <div id="action-bar"></div>
@@ -3245,7 +3245,7 @@ class UI {
         <div id="log-panel"></div>
         <button id="btn-menu" class="icon-btn" title="Menu">☰</button>
       </div>
-      <div id="screen-gameover" class="screen hidden"></div>
+      <div id="screen-morelikelameover" class="screen hidden"></div>
       <div id="modal-root"></div>
       <div id="toast"></div>
     `;
@@ -3269,14 +3269,14 @@ class UI {
     const screen = $('#screen-start');
     screen.innerHTML = '';
     screen.appendChild(el('div', { class: 'title-wrap' }, [
-      el('h1', { class: 'game-title', text: 'MONOPOLY' }),
-      el('div', { class: 'game-title-3d', text: '3D' }),
+      el('h1', { class: 'morelikelame-title', text: 'MONOPOLY' }),
+      el('div', { class: 'morelikelame-title-3d', text: '3D' }),
       el('p', { class: 'subtitle', text: 'Multiplayer · Classic US Rules · 3D low-poly' }),
       el('div', { class: 'button-col' }, [
         el('button', { class: 'btn primary', onclick: () => this._goLocalSetup(), text: 'Local Pass & Play' }),
-        el('button', { class: 'btn', onclick: () => this._goHost(), text: 'Host Online Game' }),
-        el('button', { class: 'btn', onclick: () => this._goJoin(), text: 'Join Online Game' }),
-        hasSave() ? el('button', { class: 'btn ghost', onclick: () => this._continueSaved(), text: 'Continue Saved Game' }) : null,
+        el('button', { class: 'btn', onclick: () => this._goHost(), text: 'Host Online morelikelame' }),
+        el('button', { class: 'btn', onclick: () => this._goJoin(), text: 'Join Online morelikelame' }),
+        hasSave() ? el('button', { class: 'btn ghost', onclick: () => this._continueSaved(), text: 'Continue Saved morelikelame' }) : null,
       ]),
       el('p', { class: 'footer-note', html: 'All artwork (board, cards, money, 3D pieces, sounds) is procedurally generated at runtime — no copyrighted assets are bundled. Not affiliated with or endorsed by the makers of Monopoly.' }),
     ]));
@@ -3298,7 +3298,7 @@ class UI {
     const screen = $('#screen-local-setup');
     screen.innerHTML = '';
     screen.appendChild(el('div', { class: 'panel-wrap' }, [
-      el('h2', { text: 'Local Game Setup' }),
+      el('h2', { text: 'Local morelikelame Setup' }),
       el('div', { class: 'row' }, [
         el('label', { text: 'Players:' }),
         el('select', { id: 'lp-count', onchange: (e) => this._localCountChanged(+e.target.value) },
@@ -3306,7 +3306,7 @@ class UI {
       ]),
       el('div', { id: 'lp-list' }),
       el('div', { class: 'button-col' }, [
-        el('button', { class: 'btn primary', onclick: () => this._startLocal(), text: 'Start Game' }),
+        el('button', { class: 'btn primary', onclick: () => this._startLocal(), text: 'Start morelikelame' }),
         el('button', { class: 'btn ghost', onclick: () => this._renderStart(), text: 'Back' }),
       ]),
     ]));
@@ -3350,33 +3350,33 @@ class UI {
     const players = this._localPlayers.map((p, i) => ({
       id: p.id, name: p.name || ('Player ' + (i + 1)), token: p.token, color: p.color,
     }));
-    this.game.startLocal(players);
-    this._enterGame();
+    this.morelikelame.startLocal(players);
+    this._entermorelikelame();
   }
 
   // ---- Host --------------------------------------------------------------
   async _goHost() {
-    const name = await this._promptProfile('Host a Game');
+    const name = await this._promptProfile('Host a morelikelame');
     if (!name) return;
     this._profile.name = name;
     const screen = $('#screen-host-lobby');
     screen.innerHTML = '';
     screen.appendChild(el('div', { class: 'panel-wrap' }, [
-      el('h2', { text: 'Online Game — Host' }),
+      el('h2', { text: 'Online morelikelame — Host' }),
       el('p', { text: 'Share this room code with the other players:' }),
       el('div', { id: 'host-code', class: 'room-code big', text: '…connecting…' }),
       el('p', { class: 'muted', id: 'host-status', text: '' }),
       el('h3', { text: 'Players' }),
       el('div', { id: 'host-players' }),
       el('div', { class: 'button-col' }, [
-        el('button', { class: 'btn primary', id: 'host-start', onclick: () => this._startHostGame(), text: 'Start Game', disabled: '' }),
-        el('button', { class: 'btn ghost', onclick: () => { this.game.close(); this._renderStart(); }, text: 'Cancel' }),
+        el('button', { class: 'btn primary', id: 'host-start', onclick: () => this._startHostmorelikelame(), text: 'Start morelikelame', disabled: '' }),
+        el('button', { class: 'btn ghost', onclick: () => { this.morelikelame.close(); this._renderStart(); }, text: 'Cancel' }),
       ]),
     ]));
     this._show('screen-host-lobby');
     try {
-      await this.game.startHost(null, this._profile);
-      $('#host-code').textContent = this.game.code;
+      await this.morelikelame.startHost(null, this._profile);
+      $('#host-code').textContent = this.morelikelame.code;
       $('#host-status').textContent = `You are ${this._profile.name} (${TOKEN_NAMES[this._profile.token]}). Waiting for players…`;
     } catch (e) {
       $('#host-code').textContent = '—';
@@ -3385,11 +3385,11 @@ class UI {
     }
   }
 
-  _startHostGame() {
-    if (this.game.lobby.length < 2) { this._toast('Need at least 2 players.'); return; }
+  _startHostmorelikelame() {
+    if (this.morelikelame.lobby.length < 2) { this._toast('Need at least 2 players.'); return; }
     resumeAudio();
-    this.game.startHostGame();
-    this._enterGame();
+    this.morelikelame.startHostmorelikelame();
+    this._entermorelikelame();
   }
 
   // ---- Join --------------------------------------------------------------
@@ -3397,7 +3397,7 @@ class UI {
     const screen = $('#screen-join');
     screen.innerHTML = '';
     screen.appendChild(el('div', { class: 'panel-wrap' }, [
-      el('h2', { text: 'Join Online Game' }),
+      el('h2', { text: 'Join Online morelikelame' }),
       el('label', { text: 'Room code:' }),
       el('input', { id: 'join-code', class: 'code-input', placeholder: 'ABCD', maxlength: 4, oninput: (e) => e.target.value = e.target.value.toUpperCase() }),
       el('label', { text: 'Your name:' }),
@@ -3421,7 +3421,7 @@ class UI {
     this._profile = { name, token, color: PLAYER_COLORS[Math.floor(Math.random()*PLAYER_COLORS.length)] };
     $('#join-status').textContent = 'Connecting…';
     try {
-      await this.game.joinClient(code, this._profile);
+      await this.morelikelame.joinClient(code, this._profile);
       this._showClientLobby();
     } catch (e) {
       $('#join-status').textContent = 'Could not join: room not found or full.';
@@ -3433,12 +3433,12 @@ class UI {
     const screen = $('#screen-client-lobby');
     screen.innerHTML = '';
     screen.appendChild(el('div', { class: 'panel-wrap' }, [
-      el('h2', { text: 'Joined Game' }),
-      el('p', { text: 'Room code: ' + this.game.code }),
-      el('p', { class: 'muted', text: 'Waiting for the host to start the game…' }),
+      el('h2', { text: 'Joined morelikelame' }),
+      el('p', { text: 'Room code: ' + this.morelikelame.code }),
+      el('p', { class: 'muted', text: 'Waiting for the host to start the morelikelame…' }),
       el('h3', { text: 'Players' }),
       el('div', { id: 'client-players' }),
-      el('button', { class: 'btn ghost', onclick: () => { this.game.close(); this._renderStart(); }, text: 'Leave' }),
+      el('button', { class: 'btn ghost', onclick: () => { this.morelikelame.close(); this._renderStart(); }, text: 'Leave' }),
     ]));
     this._show('screen-client-lobby');
   }
@@ -3464,53 +3464,53 @@ class UI {
 
   // ---- Continue saved ----------------------------------------------------
   _continueSaved() {
-    const data = loadGame();
+    const data = loadmorelikelame();
     if (!data) { this._toast('No save found.'); return; }
-    this.game.state = data.state;
-    this.game.mode = data.meta.mode || 'local';
-    this.game.selfId = data.meta.selfId || 'local';
-    this.game.selfPlayerId = data.meta.selfId || (data.state.players[0]?.id);
-    this.game.meta = data.meta;
-    this.game._emit([{ type: 'restore' }]);
-    this._enterGame();
+    this.morelikelame.state = data.state;
+    this.morelikelame.mode = data.meta.mode || 'local';
+    this.morelikelame.selfId = data.meta.selfId || 'local';
+    this.morelikelame.selfPlayerId = data.meta.selfId || (data.state.players[0]?.id);
+    this.morelikelame.meta = data.meta;
+    this.morelikelame._emit([{ type: 'restore' }]);
+    this._entermorelikelame();
   }
 
-  // ---- Enter the game screen --------------------------------------------
-  _enterGame() {
-    this._show('screen-game');
+  // ---- Enter the morelikelame screen --------------------------------------------
+  _entermorelikelame() {
+    this._show('screen-morelikelame');
     const container = $('#board-container');
     if (container && !container._mounted) {
       this.board.init(container);
       container._mounted = true;
     }
     this.board.resize();
-    this._renderGame();
+    this._rendermorelikelame();
   }
 
-  // ---- Main update from game.js -----------------------------------------
+  // ---- Main update from morelikelame.js -----------------------------------------
   _onUpdate(state, events) {
     // Lobby events
     const lobbyEv = events.find(e => e.type === 'lobby');
     if (lobbyEv) this._renderLobbyLists(lobbyEv.lobby, lobbyEv.code);
     const lobbyErr = events.find(e => e.type === 'lobby-error');
     if (lobbyErr) {
-      const msg = lobbyErr.error === 'full' ? 'Room is full.' : lobbyErr.error === 'started' ? 'Game already started.' : 'Cannot join.';
+      const msg = lobbyErr.error === 'full' ? 'Room is full.' : lobbyErr.error === 'started' ? 'morelikelame already started.' : 'Cannot join.';
       this._toast(msg);
-      this.game.close();
+      this.morelikelame.close();
       this._renderStart();
       return;
     }
     // In-lobby: keep lobby screen visible
     if (state.phase === 'lobby' || state.players.length === 0) return;
 
-    // If we just entered a game (host started), switch to game screen.
-    if (!$('#screen-game').classList.contains('hidden') === false) {
-      // already on game screen
+    // If we just entered a morelikelame (host started), switch to morelikelame screen.
+    if (!$('#screen-morelikelame').classList.contains('hidden') === false) {
+      // already on morelikelame screen
     }
-    if ($('#screen-game').classList.contains('hidden')) {
-      this._enterGame();
+    if ($('#screen-morelikelame').classList.contains('hidden')) {
+      this._entermorelikelame();
     }
-    this._renderGame();
+    this._rendermorelikelame();
     this._handleEvents(events, state);
   }
 
@@ -3531,15 +3531,15 @@ class UI {
     const startBtn = $('#host-start');
     if (startBtn) {
       startBtn.disabled = lobby.length < 2 ? '' : null;
-      if (startBtn.disabled) startBtn.textContent = `Start Game (need 2+)`;
-      else startBtn.textContent = 'Start Game';
+      if (startBtn.disabled) startBtn.textContent = `Start morelikelame (need 2+)`;
+      else startBtn.textContent = 'Start morelikelame';
     }
     if (code && $('#host-code')) $('#host-code').textContent = code;
   }
 
-  // ---- Game screen rendering --------------------------------------------
-  _renderGame() {
-    const state = this.game.state;
+  // ---- morelikelame screen rendering --------------------------------------------
+  _rendermorelikelame() {
+    const state = this.morelikelame.state;
     if (!state || state.players.length === 0) return;
     const cur = state.players[state.currentPlayerIndex];
     const isMyTurn = this._isMyTurn();
@@ -3563,9 +3563,9 @@ class UI {
     // Action bar
     const bar = $('#action-bar');
     bar.innerHTML = '';
-    if (state.phase === 'gameover') {
-      bar.appendChild(el('div', { class: 'muted', text: 'Game over.' }));
-      this._showGameOver();
+    if (state.phase === 'morelikelameover') {
+      bar.appendChild(el('div', { class: 'muted', text: 'morelikelame over.' }));
+      this._showmorelikelameOver();
       return;
     }
     const pending = state.pending;
@@ -3576,8 +3576,8 @@ class UI {
         const sp = BOARD[pending.pos];
         if (isMyTurn) {
           bar.appendChild(el('div', { class: 'action-group' }, [
-            el('button', { class: 'btn primary', onclick: () => this.game.dispatch({ kind: 'buy', playerId: cur.id }), text: `Buy ${sp.name} ($${sp.price})` }),
-            el('button', { class: 'btn', onclick: () => this.game.dispatch({ kind: 'decline-buy', playerId: cur.id }), text: 'Auction' }),
+            el('button', { class: 'btn primary', onclick: () => this.morelikelame.dispatch({ kind: 'buy', playerId: cur.id }), text: `Buy ${sp.name} ($${sp.price})` }),
+            el('button', { class: 'btn', onclick: () => this.morelikelame.dispatch({ kind: 'decline-buy', playerId: cur.id }), text: 'Auction' }),
           ]));
         } else {
           bar.appendChild(el('div', { class: 'muted', text: `${cur.name} is deciding whether to buy ${sp.name}.` }));
@@ -3587,8 +3587,8 @@ class UI {
         const tenPct = Math.floor(nw * 0.10);
         if (isMyTurn) {
           bar.appendChild(el('div', { class: 'action-group' }, [
-            el('button', { class: 'btn primary', onclick: () => this.game.dispatch({ kind: 'income-tax', playerId: cur.id, choice: 'flat' }), text: 'Pay $200' }),
-            el('button', { class: 'btn', onclick: () => this.game.dispatch({ kind: 'income-tax', playerId: cur.id, choice: 'percent' }), text: `Pay 10% ($${tenPct})` }),
+            el('button', { class: 'btn primary', onclick: () => this.morelikelame.dispatch({ kind: 'income-tax', playerId: cur.id, choice: 'flat' }), text: 'Pay $200' }),
+            el('button', { class: 'btn', onclick: () => this.morelikelame.dispatch({ kind: 'income-tax', playerId: cur.id, choice: 'percent' }), text: `Pay 10% ($${tenPct})` }),
           ]));
         }
       }
@@ -3601,22 +3601,22 @@ class UI {
         // Roll phase
         if (cur.inJail) {
           bar.appendChild(el('div', { class: 'action-group' }, [
-            el('button', { class: 'btn primary', onclick: () => this.game.dispatch({ kind: 'roll' }), text: 'Roll for Doubles' }),
-            el('button', { class: 'btn', onclick: () => this.game.dispatch({ kind: 'jail-fine', playerId: cur.id }), text: 'Pay $50' }),
-            cur.getOutCards > 0 ? el('button', { class: 'btn', onclick: () => this.game.dispatch({ kind: 'jail-gooj', playerId: cur.id }), text: 'Use GOOJ' }) : null,
+            el('button', { class: 'btn primary', onclick: () => this.morelikelame.dispatch({ kind: 'roll' }), text: 'Roll for Doubles' }),
+            el('button', { class: 'btn', onclick: () => this.morelikelame.dispatch({ kind: 'jail-fine', playerId: cur.id }), text: 'Pay $50' }),
+            cur.getOutCards > 0 ? el('button', { class: 'btn', onclick: () => this.morelikelame.dispatch({ kind: 'jail-gooj', playerId: cur.id }), text: 'Use GOOJ' }) : null,
           ]));
         } else {
           const rollLabel = state.doublesCount > 0 ? '🎲 Roll Again (doubles!)' : '🎲 Roll Dice';
           bar.appendChild(el('div', { class: 'action-group' }, [
-            el('button', { class: 'btn primary big', onclick: () => this.game.dispatch({ kind: 'roll' }), text: rollLabel }),
-            state.doublesCount > 0 ? el('button', { class: 'btn ghost', onclick: () => this.game.dispatch({ kind: 'end-turn' }), text: 'End Turn' }) : null,
+            el('button', { class: 'btn primary big', onclick: () => this.morelikelame.dispatch({ kind: 'roll' }), text: rollLabel }),
+            state.doublesCount > 0 ? el('button', { class: 'btn ghost', onclick: () => this.morelikelame.dispatch({ kind: 'end-turn' }), text: 'End Turn' }) : null,
             el('button', { class: 'btn', onclick: () => this._openTradeModal(), text: 'Trade' }),
             el('button', { class: 'btn', onclick: () => this._openBuildModal(), text: 'Build / Manage' }),
           ]));
         }
       } else if (isMyTurn && state.rolledThisTurn) {
         bar.appendChild(el('div', { class: 'action-group' }, [
-          el('button', { class: 'btn primary', onclick: () => this.game.dispatch({ kind: 'end-turn' }), text: 'End Turn' }),
+          el('button', { class: 'btn primary', onclick: () => this.morelikelame.dispatch({ kind: 'end-turn' }), text: 'End Turn' }),
           el('button', { class: 'btn', onclick: () => this._openTradeModal(), text: 'Trade' }),
           el('button', { class: 'btn', onclick: () => this._openBuildModal(), text: 'Build / Manage' }),
         ]));
@@ -3632,12 +3632,12 @@ class UI {
   }
 
   _isMyTurn() {
-    const state = this.game.state;
+    const state = this.morelikelame.state;
     if (!state || state.players.length === 0) return false;
     const cur = state.players[state.currentPlayerIndex];
     if (!cur) return false;
-    if (this.game.mode === 'local') return true;
-    return cur.id === this.game.selfPlayerId;
+    if (this.morelikelame.mode === 'local') return true;
+    return cur.id === this.morelikelame.selfPlayerId;
   }
 
   _renderPlayersPanel(state) {
@@ -3727,13 +3727,13 @@ class UI {
   }
 
   _openAuctionModal() {
-    const state = this.game.state;
+    const state = this.morelikelame.state;
     const a = state.auction;
     if (!a) return;
     this._auctionModalOpen = true;
     const sp = BOARD[a.pos];
     const currentBidderId = a.bidders[a.currentIndex];
-    const isMine = currentBidderId === this.game.selfPlayerId || this.game.mode === 'local';
+    const isMine = currentBidderId === this.morelikelame.selfPlayerId || this.morelikelame.mode === 'local';
     const bidder = state.players.find(p => p.id === currentBidderId);
     this._modal({
       title: `Auction: ${sp.name}`,
@@ -3747,16 +3747,16 @@ class UI {
         { label: 'Place Bid', primary: true, onclick: (close) => {
           const v = parseInt($('#auc-bid').value, 10);
           if (!v || v <= a.highBid) { this._toast('Bid too low.'); return; }
-          this.game.dispatch({ kind: 'bid', playerId: currentBidderId, amount: v });
+          this.morelikelame.dispatch({ kind: 'bid', playerId: currentBidderId, amount: v });
           close();
         }},
-        { label: 'Pass', onclick: (close) => { this.game.dispatch({ kind: 'pass-bid', playerId: currentBidderId }); close(); } },
+        { label: 'Pass', onclick: (close) => { this.morelikelame.dispatch({ kind: 'pass-bid', playerId: currentBidderId }); close(); } },
       ] : [],
     });
   }
 
   _openBuildModal() {
-    const state = this.game.state;
+    const state = this.morelikelame.state;
     const me = this._me();
     if (!me) return;
     const myProps = BOARD.filter(s => s.type === 'property' && state.properties[s.pos]?.owner === me.id);
@@ -3773,15 +3773,15 @@ class UI {
             ]),
             el('div', { class: 'deed-actions' }, [
               prop.mortgaged
-                ? el('button', { class: 'btn small', onclick: () => { this.game.dispatch({ kind: 'unmortgage', playerId: me.id, pos: s.pos }); this._closeModal(); this._openBuildModal(); }, text: 'Unmortgage' })
+                ? el('button', { class: 'btn small', onclick: () => { this.morelikelame.dispatch({ kind: 'unmortgage', playerId: me.id, pos: s.pos }); this._closeModal(); this._openBuildModal(); }, text: 'Unmortgage' })
                 : (owns && prop.houses < 5
-                    ? el('button', { class: 'btn small', onclick: () => { this.game.dispatch({ kind: 'buy-house', playerId: me.id, pos: s.pos }); this._closeModal(); this._openBuildModal(); }, text: `+ House ($${s.house})` })
+                    ? el('button', { class: 'btn small', onclick: () => { this.morelikelame.dispatch({ kind: 'buy-house', playerId: me.id, pos: s.pos }); this._closeModal(); this._openBuildModal(); }, text: `+ House ($${s.house})` })
                     : null),
               prop.houses > 0
-                ? el('button', { class: 'btn small', onclick: () => { this.game.dispatch({ kind: 'sell-house', playerId: me.id, pos: s.pos }); this._closeModal(); this._openBuildModal(); }, text: `Sell ($${Math.floor(s.house/2)})` })
+                ? el('button', { class: 'btn small', onclick: () => { this.morelikelame.dispatch({ kind: 'sell-house', playerId: me.id, pos: s.pos }); this._closeModal(); this._openBuildModal(); }, text: `Sell ($${Math.floor(s.house/2)})` })
                 : null,
               !prop.mortgaged && prop.houses === 0
-                ? el('button', { class: 'btn small ghost', onclick: () => { this.game.dispatch({ kind: 'mortgage', playerId: me.id, pos: s.pos }); this._closeModal(); this._openBuildModal(); }, text: `Mortgage ($${Math.floor(s.price/2)})` })
+                ? el('button', { class: 'btn small ghost', onclick: () => { this.morelikelame.dispatch({ kind: 'mortgage', playerId: me.id, pos: s.pos }); this._closeModal(); this._openBuildModal(); }, text: `Mortgage ($${Math.floor(s.price/2)})` })
                 : null,
             ]),
           ]);
@@ -3792,7 +3792,7 @@ class UI {
   }
 
   _openTradeModal() {
-    const state = this.game.state;
+    const state = this.morelikelame.state;
     const me = this._me();
     if (!me) return;
     const others = state.players.filter(p => !p.bankrupt && p.id !== me.id);
@@ -3848,7 +3848,7 @@ class UI {
           const fromGooj = $('#tr-from-gooj')?.checked ? 1 : 0;
           const toGooj = $('#tr-to-gooj')?.checked ? 1 : 0;
           if (!fromCash && !toCash && !fromProps.length && !toProps.length && !fromGooj && !toGooj) { this._toast('Nothing to trade.'); return; }
-          this.game.dispatch({ kind: 'trade', offer: {
+          this.morelikelame.dispatch({ kind: 'trade', offer: {
             from: me.id, to: partnerId,
             fromGives: { cash: fromCash, properties: fromProps, goojCards: fromGooj },
             toGives:   { cash: toCash,   properties: toProps,   goojCards: toGooj },
@@ -3861,7 +3861,7 @@ class UI {
   }
 
   _openPlayerAssets(playerId) {
-    const state = this.game.state;
+    const state = this.morelikelame.state;
     const p = state.players.find(pl => pl.id === playerId);
     if (!p) return;
     const props = BOARD.filter(s => state.properties[s.pos]?.owner === playerId);
@@ -3890,30 +3890,30 @@ class UI {
       body: el('div', { class: 'button-col' }, [
         el('button', { class: 'btn', onclick: (close) => { this.audioOn = !this.audioOn; setAudioEnabled(this.audioOn); close(); this._openMenu(); }, text: (this.audioOn ? 'Mute' : 'Unmute') + ' Sound' }),
         el('button', { class: 'btn', onclick: (close) => { this.board.resetCamera(); close(); }, text: 'Reset Camera' }),
-        el('button', { class: 'btn ghost', onclick: (close) => { if (confirm('Leave the game?')) { this.game.close(); clearSave(); close(); this._renderStart(); } }, text: 'Leave Game' }),
+        el('button', { class: 'btn ghost', onclick: (close) => { if (confirm('Leave the morelikelame?')) { this.morelikelame.close(); clearSave(); close(); this._renderStart(); } }, text: 'Leave morelikelame' }),
       ]),
       buttons: [{ label: 'Close', primary: true, onclick: (close) => close() }],
     });
   }
 
-  _showGameOver() {
-    const state = this.game.state;
+  _showmorelikelameOver() {
+    const state = this.morelikelame.state;
     const winner = state.players.find(p => p.id === state.winner);
-    const screen = $('#screen-gameover');
+    const screen = $('#screen-morelikelameover');
     screen.innerHTML = '';
     screen.appendChild(el('div', { class: 'panel-wrap' }, [
-      el('h1', { class: 'win-title', text: 'Game Over' }),
+      el('h1', { class: 'win-title', text: 'morelikelame Over' }),
       el('p', { class: 'win-name', style: { color: winner?.color }, text: `${winner?.name} wins!` }),
-      el('button', { class: 'btn primary', onclick: () => { clearSave(); this.game.close(); this._renderStart(); }, text: 'New Game' }),
+      el('button', { class: 'btn primary', onclick: () => { clearSave(); this.morelikelame.close(); this._renderStart(); }, text: 'New morelikelame' }),
     ]));
-    this._show('screen-gameover');
+    this._show('screen-morelikelameover');
   }
 
   // ---- Helpers -----------------------------------------------------------
   _me() {
-    const state = this.game.state;
-    if (this.game.mode === 'local') return state.players[state.currentPlayerIndex];
-    return state.players.find(p => p.id === this.game.selfPlayerId);
+    const state = this.morelikelame.state;
+    if (this.morelikelame.mode === 'local') return state.players[state.currentPlayerIndex];
+    return state.players.find(p => p.id === this.morelikelame.selfPlayerId);
   }
 
   _ownsGroup(state, playerId, group) {
@@ -3944,18 +3944,18 @@ class UI {
 
 
 // ===== js/main.js =====
-// main.js — bootstrap. Wires Game + Board3D + UI together.
+// main.js — bootstrap. Wires morelikelame + Board3D + UI together.
 
 
 
 
 function boot() {
-  const game = new Game();
+  const morelikelame = new morelikelame();
   const board = new Board3D();
-  const ui = new UI(game, board);
+  const ui = new UI(morelikelame, board);
   ui.mount(document.getElementById('app'));
   // Expose for debugging in the browser console.
-  window.__monopoly3d = { game, board, ui };
+  window.__monopoly3d = { morelikelame, board, ui };
 }
 
 if (document.readyState === 'loading') {
