@@ -264,16 +264,16 @@ html, body {
 <body>
   <div id="app"></div>
 
-  <!-- PeerJS (WebRTC broker) — falls back gracefully if blocked. -->
-  <script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"
+  <!-- PeerJS (WebRTC broker) — falls back gracefully if unavailable. -->
+  <script src="./vendor/peerjs/peerjs.min.js"
           onerror="console.warn('PeerJS failed to load — online play disabled, local play still works.')"></script>
 
   <!-- Three.js + addons via importmap -->
   <script type="importmap">
   {
     "imports": {
-      "three": "https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.module.js",
-      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.161.0/examples/jsm/"
+      "three": "./vendor/three/build/three.module.js",
+      "three/addons/": "./vendor/three/examples/jsm/"
     }
   }
   </script>
@@ -3950,12 +3950,12 @@ class UI {
 
 
 function boot() {
-  const morelikelame = new morelikelame();
+  const game = new morelikelame();
   const board = new Board3D();
-  const ui = new UI(morelikelame, board);
+  const ui = new UI(game, board);
   ui.mount(document.getElementById('app'));
   // Expose for debugging in the browser console.
-  window.__monopoly3d = { morelikelame, board, ui };
+  window.__monopoly3d = { morelikelame: game, board, ui };
 }
 
 if (document.readyState === 'loading') {
